@@ -3,7 +3,14 @@ import Immutable, {Map} from "immutable";
 
 import Todo from "../models/todo";
 
-appState.cursor(["state", "todos"]).update(() => Map());
+if (localStorage) {
+  appState.cursor(["state", "todos"]).update(() => {
+    let todosCache = JSON.parse(localStorage.getItem("todosCache")) || {};
+    return Immutable.fromJS(todosCache);
+  });
+} else {
+  appState.cursor(["state", "todos"]).update(() => Map());
+}
 
 export function getTodo(todoId) {
   return appState.cursor(["state", "todos", todoId]);
@@ -16,9 +23,12 @@ function generateId() {
 }
 
 function updateCache() {
-  appState.cursor(["state", "todosCache"]).update(() => {
+  let todosCache = appState.cursor(["state", "todosCache"]).update(() => {
     return appState.cursor(["state", "todos"]).deref();
   });
+  if (localStorage) {
+    localStorage.setItem("todosCache", JSON.stringify(todosCache));
+  }
 }
 
 export function createTodo(todo) {
