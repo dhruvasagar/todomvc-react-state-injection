@@ -1,0 +1,10 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    title TodoMVC - React State Injection
+    meta(name="viewport" content="width=device-width")
+  body
+    #root
+    - base = 'production' == process.env.NODE_ENV ? '' : 'http://localhost:4000'
+    script(src='#{base}/bundle/js/app.js')

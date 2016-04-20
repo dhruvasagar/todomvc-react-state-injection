@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+INSTALL=${2:-false}
+
+if [ $INSTALL != false ]; then
+  npm install
+fi
+
+mkdir -p log pids
+
+NODE_ENV=development node index.js > log/index.log 2>&1 &
+echo $! > pids/index.pid
+
+node client-dev-server.js > log/dev.log 2>&1 &
+echo $! > pids/dev.pid
+
+tail -f log/*
