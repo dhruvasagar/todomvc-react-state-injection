@@ -3,8 +3,8 @@ import React from "react";
 
 import If from "../shared/if";
 import Todo from "../../models/todo";
-import {clearCompleted} from "../../stores/todo";
 import component from "../shared/component";
+import {clearCompleted} from "../../stores/todo";
 
 import {filterBy, isCurrentFilter} from "../../stores/todo";
 
