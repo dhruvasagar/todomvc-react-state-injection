@@ -6,8 +6,7 @@ import Todo from "../../models/todo";
 import View from "../../models/view";
 import component from "../shared/component";
 
-import {setView} from "../../stores/view";
-import {clearCompleted} from "../../stores/todo";
+import {setFilter, clearCompleted} from "../../stores/view";
 
 class Footer extends React.Component {
   constructor() {
@@ -27,14 +26,10 @@ class Footer extends React.Component {
     return this.props.viewParams;
   }
 
-  handleFilter(state) {
-    let todos = this.props.todos;
+  handleFilter(filter) {
     return function(e) {
       e.preventDefault();
-      setView({
-        todos: Todo.filter(todos, state),
-        currentFilter: state
-      });
+      setFilter(filter);
     };
   }
 

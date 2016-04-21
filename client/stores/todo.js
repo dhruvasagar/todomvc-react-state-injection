@@ -3,32 +3,36 @@ import Immutable, {Map} from "immutable";
 
 import Todo from "../models/todo";
 
-if (localStorage) {
-  appState.cursor(["state", "todos"]).update(() => {
-    let todosCache = JSON.parse(localStorage.getItem("todosCache")) || {};
-    return Immutable.fromJS(todosCache);
-  });
-} else {
-  appState.cursor(["state", "todos"]).update(() => Map());
+function setItem(key, data) {
+  if (localStorage) {
+    localStorage.setItem(key, data);
+  }
 }
+
+function getItem(key) {
+  if (localStorage) {
+    return localStorage.getItem(key);
+  }
+}
+
+appState.cursor(["state", "todos"]).update(() => {
+  let todosCache = JSON.parse(getItem("todosCache") || {});
+  return Immutable.fromJS(todosCache);
+});
 
 export function getTodos() {
   return appState.cursor(["state", "todos"]).deref();
 }
 
-var todoCounter = 0;
+var todoCounter = parseInt(getItem("todoCounter"), 10);
 function generateId() {
   todoCounter += 1;
+  setItem("todoCounter", todoCounter);
   return String(todoCounter);
 }
 
 function updateCache() {
-  let todosCache = appState.cursor(["state", "todosCache"]).update(() => {
-    return appState.cursor(["state", "todos"]).deref();
-  });
-  if (localStorage) {
-    localStorage.setItem("todosCache", JSON.stringify(todosCache));
-  }
+  setItem("todosCache", JSON.stringify(getTodos()));
 }
 
 export function createTodo(todo) {
@@ -73,22 +77,4 @@ export function updateTodo(todoId, todoParams) {
 export function removeTodo(todoId) {
   appState.cursor(["state", "todos"]).delete(todoId);
   updateCache();
-}
-
-export function filterBy(state) {
-  let allTodos = appState.cursor(["state", "todosCache"]).deref();
-  appState.cursor(["state", "todos"]).update(() => {
-    if (state === "all") {
-      return allTodos;
-    } else if (state === "active") {
-      return allTodos.filterNot(Todo.isCompleted);
-    } else {
-      return allTodos.filter(Todo.isCompleted);
-    }
-  });
-  appState.cursor(["state", "filterBy"]).update(() => state);
-}
-
-export function isCurrentFilter(state) {
-  return appState.cursor(["state"]).get("filterBy") === state;
 }

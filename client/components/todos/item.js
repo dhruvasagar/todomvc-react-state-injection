@@ -1,13 +1,14 @@
 import _ from "lodash";
 import React from "react";
 
-import If from "../shared/if";
 import component from "../shared/component";
 
 import Todo from "../../models/todo";
+
 import {
-  getTodo, toggleTodo, updateTodo, removeTodo
+  toggleTodo, updateTodo, removeTodo
 } from "../../stores/todo";
+import {updateViewTodos} from "../../stores/view";
 
 class TodoItem extends React.Component {
   constructor() {
@@ -67,6 +68,7 @@ class TodoItem extends React.Component {
 
   handleDestroy() {
     removeTodo(this.props.todoId);
+    updateViewTodos();
   }
 
   handleEdit() {

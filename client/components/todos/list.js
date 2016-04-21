@@ -6,7 +6,7 @@ import Footer from "./footer";
 import TodoItem from "./item";
 import component from "../shared/component";
 
-import {setView} from "../../stores/view";
+import {updateViewTodos} from "../../stores/view";
 import {createTodo, toggleAll} from "../../stores/todo";
 
 class TodoList extends React.Component {
@@ -43,12 +43,13 @@ class TodoList extends React.Component {
       title: e.target.value,
       completed: false
     });
+    updateViewTodos();
 
-    setView({newTodo: ""});
+    this.setState({newTodo: ""});
   }
 
   handleChange(e) {
-    setView({newTodo: e.target.value});
+    this.setState({newTodo: e.target.value});
   }
 
   handleToggleAll(e) {
@@ -74,7 +75,7 @@ class TodoList extends React.Component {
             type="text"
             className="new-todo"
             placeholder="What needs to be done?"
-            value={viewParams.get("newTodo")}
+            value={this.state.newTodo}
             onKeyDown={this.handleNewTodoKeyDown}
             onChange={this.handleChange}
             autoFocus={true}
