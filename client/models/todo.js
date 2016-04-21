@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 var Todo = {
   getId: function(todo) {
     return String(todo.get("id"));
@@ -15,8 +17,17 @@ var Todo = {
     return todos.get(todoId) || {};
   },
 
+  filter: function(todos, filter) {
+    let fn = "get" + _.capitalize(filter);
+    return this[fn](todos);
+  },
+
   getCount: function(todos) {
     return todos && todos.count();
+  },
+
+  getAll: function(todos) {
+    return todos;
   },
 
   getActive: function(todos) {

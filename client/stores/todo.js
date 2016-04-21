@@ -12,8 +12,8 @@ if (localStorage) {
   appState.cursor(["state", "todos"]).update(() => Map());
 }
 
-export function getTodo(todoId) {
-  return appState.cursor(["state", "todos", todoId]);
+export function getTodos() {
+  return appState.cursor(["state", "todos"]).deref();
 }
 
 var todoCounter = 0;

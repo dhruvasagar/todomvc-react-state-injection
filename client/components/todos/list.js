@@ -6,6 +6,7 @@ import Footer from "./footer";
 import TodoItem from "./item";
 import component from "../shared/component";
 
+import {setView} from "../../stores/view";
 import {createTodo, toggleAll} from "../../stores/todo";
 
 class TodoList extends React.Component {
@@ -16,14 +17,19 @@ class TodoList extends React.Component {
       newTodo: ""
     };
 
-    this.getTodos = this.getTodos.bind(this);
+    this.getViewTodos = this.getViewTodos.bind(this);
+    this.getViewParams = this.getViewParams.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleToggleAll = this.handleToggleAll.bind(this);
     this.handleNewTodoKeyDown = this.handleNewTodoKeyDown.bind(this);
   }
 
-  getTodos() {
-    return this.props.todos.toList();
+  getViewTodos() {
+    return this.props.viewTodos.toList();
+  }
+
+  getViewParams() {
+    return this.props.viewParams;
   }
 
   handleNewTodoKeyDown(e) {
@@ -38,11 +44,11 @@ class TodoList extends React.Component {
       completed: false
     });
 
-    this.setState({newTodo: ""});
+    setView({newTodo: ""});
   }
 
   handleChange(e) {
-    this.setState({newTodo: e.target.value});
+    setView({newTodo: e.target.value});
   }
 
   handleToggleAll(e) {
@@ -58,7 +64,8 @@ class TodoList extends React.Component {
   }
 
   render() {
-    var todos = this.getTodos();
+    var viewTodos = this.getViewTodos();
+    var viewParams = this.getViewParams();
     return (
       <div>
         <header className="header">
@@ -67,22 +74,22 @@ class TodoList extends React.Component {
             type="text"
             className="new-todo"
             placeholder="What needs to be done?"
-            value={this.state.newTodo}
+            value={viewParams.get("newTodo")}
             onKeyDown={this.handleNewTodoKeyDown}
             onChange={this.handleChange}
             autoFocus={true}
           />
         </header>
-        <If condition={Todo.getCount(todos) > 0}>
+        <If condition={Todo.getCount(viewTodos) > 0}>
           <section className="main">
             <input
               className="toggle-all"
               type="checkbox"
               onChange={this.handleToggleAll}
-              checked={Todo.getActiveCount(todos) === 0}
+              checked={Todo.getActiveCount(viewTodos) === 0}
             />
             <ul className="todo-list">
-              {todos.map(this.renderTodoItem)}
+              {viewTodos.map(this.renderTodoItem)}
             </ul>
           </section>
         </If>
@@ -93,7 +100,8 @@ class TodoList extends React.Component {
 }
 
 TodoList = component(TodoList, {
-  todos: ["state", "todos"]
+  viewParams: ["state", "view"],
+  viewTodos: ["state", "view", "todos"]
 });
 
 export default TodoList;

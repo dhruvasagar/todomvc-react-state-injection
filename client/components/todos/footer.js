@@ -3,17 +3,18 @@ import React from "react";
 
 import If from "../shared/if";
 import Todo from "../../models/todo";
+import View from "../../models/view";
 import component from "../shared/component";
-import {clearCompleted} from "../../stores/todo";
 
-import {filterBy, isCurrentFilter} from "../../stores/todo";
+import {setView} from "../../stores/view";
+import {clearCompleted} from "../../stores/todo";
 
 class Footer extends React.Component {
   constructor() {
     super();
 
     this.getTodos = this.getTodos.bind(this);
-    this.getTodosCache = this.getTodosCache.bind(this);
+    this.getViewParams = this.getViewParams.bind(this);
     this.renderFilters = this.renderFilters.bind(this);
     this.renderFilterLink = this.renderFilterLink.bind(this);
   }
@@ -22,30 +23,34 @@ class Footer extends React.Component {
     return this.props.todos.toList();
   }
 
-  getTodosCache() {
-    return this.props.todosCache.toList();
+  getViewParams() {
+    return this.props.viewParams;
+  }
+
+  handleFilter(state) {
+    let todos = this.props.todos;
+    return function(e) {
+      e.preventDefault();
+      setView({
+        todos: Todo.filter(todos, state),
+        currentFilter: state
+      });
+    };
   }
 
   handleClearCompleted() {
     clearCompleted();
   }
 
-  handleFilter(state) {
-    return function(e) {
-      e.preventDefault();
-      filterBy(state);
-    };
-  }
-
-  renderFilterLink(filterBy) {
+  renderFilterLink(filter) {
+    var viewParams = this.getViewParams();
     return (
-      <li key={filterBy}>
+      <li key={filter}>
         <a
-          key={filterBy}
           href="#"
-          onClick={this.handleFilter(filterBy)}
-          className={isCurrentFilter(filterBy) ? "selected" : ""}>
-          {_.capitalize(filterBy)}
+          onClick={this.handleFilter(filter)}
+          className={View.isCurrentFilter(viewParams, filter) ? "selected" : ""}>
+          {_.capitalize(filter)}
         </a>
       </li>
     );
@@ -62,11 +67,10 @@ class Footer extends React.Component {
 
   render() {
     let todos = this.getTodos();
-    let todosCache = this.getTodosCache();
     return (
       <footer className="footer">
         <span className="todo-count">
-          <strong>{Todo.getActiveCount(todosCache)}</strong> item left
+          <strong>{Todo.getActiveCount(todos)}</strong> item left
         </span>
         {this.renderFilters()}
         <If condition={Todo.getCompletedCount(todos) > 0}>
@@ -82,9 +86,8 @@ class Footer extends React.Component {
 }
 
 Footer = component(Footer, {
-  state: ["state"],
   todos: ["state", "todos"],
-  todosCache: ["state", "todosCache"]
+  viewParams: ["state", "view"]
 });
 
 export default Footer;
