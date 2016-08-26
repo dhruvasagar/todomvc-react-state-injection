@@ -66,7 +66,6 @@ class TodoList extends React.Component {
 
   render() {
     var viewTodos = this.getViewTodos();
-    var viewParams = this.getViewParams();
     return (
       <div>
         <header className="header">
